@@ -13,8 +13,6 @@ class _HomeScreenState extends State<HomeScreen> {
   DBHelper? dbHelper;
   late Future<List<NotesModel>> notesList;
 
-
-
   @override
   void initState() {
     super.initState();
@@ -30,44 +28,61 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Note SQL'),
+        title: const Text(
+          'Note SQL',
+          style: TextStyle(
+              fontWeight: FontWeight.bold, fontSize: 25, color: Colors.white),
+        ),
+        backgroundColor: Colors.orangeAccent,
+        centerTitle: true,
       ),
-      body:  Column(
+      body: Column(
         children: [
           Expanded(
               child: FutureBuilder(
-              future: notesList,
-              builder: (context, AsyncSnapshot<List<NotesModel>> snaphsot) {
-               /* if(!snaphsot.hasData){
-                  return const Text("data");
-                }
-                else{*/
-                  return ListView.builder(
-                      itemCount: snaphsot.data?.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(0.0),
-                            title: Text(snaphsot.data![index].title.toString()),
-                            subtitle: Text(snaphsot.data![index].title.toString()),
-                            trailing: Text(snaphsot.data![index].age.toString()),
-                          ),
-                        );
-                      });
-                //}
-              }))
+                  future: notesList,
+                  builder: (context, AsyncSnapshot<List<NotesModel>> snaphsot) {
+                    if (!snaphsot.hasData) {
+                      return const Text("data");
+                    } else {
+                      return ListView.builder(
+                          itemCount: snaphsot.data?.length,
+                          itemBuilder: (context, index) {
+                            return Card.outlined(
+                              child: ListTile(
+                                leading: const CircleAvatar(
+                                  child: Icon(Icons.home),
+                                ),
+                                title: Text(
+                                  snaphsot.data![index].title.toString(),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                ),
+                                subtitle: Text(snaphsot.data![index].description
+                                    .toString()),
+                                trailing:
+                                    Text(snaphsot.data![index].age.toString()),
+                              ),
+                            );
+                          });
+                    }
+                  }))
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          dbHelper
-              ?.insert(NotesModel(
-                  title: 'Pawan Kumar Chauhan',
-                  age: 24,
-                  description: 'This is very bad boy...',
-                  email: 'pawan.chauhan7394@gmail.com'))
-              .then((value) {
+          NotesModel notesModel = NotesModel();
+          notesModel.title = 'Lorem Ipsum';
+          notesModel.description =
+              'Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.';
+          notesModel.age = 22;
+          notesModel.email = 'pawan.chauhan7394@gmail.com';
+          dbHelper?.insert(notesModel).then((value) {
             print('data added');
+            setState(() {
+              loadData();
+            });
           }).onError((error, stackTrace) {
             print(error.toString());
           });
